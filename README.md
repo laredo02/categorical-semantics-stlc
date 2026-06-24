@@ -1,23 +1,10 @@
 # A Computational Approach to the Categorical Semantics of the Simply Typed Lambda Calculus
 
-**Master's Thesis** · Universidad Complutense & Politécnica de Madrid · March 2026  
-**Author:** Miguel Laredo Barbadillo  
-**Tutors:** Raúl Lara Cabrera
-*Master's in Formal Methods in Computer Science*
-
-## Contents
-
 1. **Untyped λ-Calculus** — syntax, α/β/η-equivalence, Church–Rosser, normalization, encodings, fixed-point combinators
 2. **Typing and Extensions** — Church- and Curry-style typing, products, sums, strong normalization
 3. **Intuitionistic Logic & Curry–Howard** — BHK interpretation, natural deduction, propositions-as-types
 4. **Categories at Work** — functors, natural transformations, universal constructions, CCCs, Yoneda
 5. **Curry–Howard–Lambek** — C(λ) is cartesian closed, the three-way correspondence, perspectives toward HoTT
-
----
-
-## The Core Correspondence
-
-The thesis culminates in this table, which is the reason the three subjects are studied together:
 
 | Intuitionistic Logic | Typed λ-Calculus | Category Theory |
 |---|---|---|
@@ -32,29 +19,24 @@ The thesis culminates in this table, which is the reason the three subjects are 
 
 ---
 
-## Snippet — The Central Result
+## Why the Untyped Calculus Needs Types
 
-The last chapter proves that the category **C(λ)** — whose objects are types and whose morphisms are βη-equivalence classes of closed terms — is cartesian closed. The heart of the exponential construction (Ch. 5, Proposition 5.1.2):
+The Ω combinator (Ch. 1) shows the untyped calculus permits non-termination. This motivates typing — the Y combinator is untypable in the simply typed system:
 
+```haskell
+-- Non-normalizing: reduces to itself forever
+-- Ω ≡ (λx. x x)(λx. x x) ↓β (λx. x x)(λx. x x) ↓β ...
+
+-- Y combinator — also untypable in STLC
+ycomb = Abs "f" (App
+          (Abs "x" (App (Var "f") (App (Var "x") (Var "x"))))
+          (Abs "x" (App (Var "f") (App (Var "x") (Var "x")))))
+
+ghci> infer [] ycomb 0
+Nothing    -- the type system rejects it
 ```
--- The exponential A ⇒ B is the function type A → B.
--- Evaluation morphism:
-ev : (A → B) × A → B
-ev := λp. (π₁ p)(π₂ p)
 
--- Currying (the unique transpose):
-curry(h) := λc. λa. h⟨c, a⟩
-
--- Universal property check:
-ev ∘ ⟨curry(h), π₂⟩ ≡_βη h      -- ev after curry recovers h
-k ≡ curry(h)                       -- curry is unique
-```
-
-Giving a morphism `h : C × A → B` is the same as giving `curry(h) : C → (A → B)`. The categorical universal property *is* the λ-abstraction rule in disguise.
-
----
-
-## Snippet — Curry–Howard in Action
+## Curry–Howard in Action
 
 Modus ponens, read as a program (Ch. 3, Example 3.4.2):
 
@@ -72,24 +54,25 @@ Modus ponens, read as a program (Ch. 3, Example 3.4.2):
 f x                              ⊢  Q
 ```
 
----
+## Main Result
 
-## Snippet — Why the Untyped Calculus Needs Types
+The last chapter proves that the category **C(λ)**, whose objects are types and whose morphisms are βη-equivalence classes of closed terms, is cartesian closed. The heart of the exponential construction (Ch. 5, Proposition 5.1.2):
 
-The Ω combinator (Ch. 1) shows the untyped calculus permits non-termination. This motivates typing — the Y combinator is untypable in the simply typed system:
-
-```haskell
--- Non-normalizing: reduces to itself forever
--- Ω ≡ (λx. x x)(λx. x x) ↓β (λx. x x)(λx. x x) ↓β ...
-
--- Y combinator — also untypable in STLC
-ycomb = Abs "f" (App
-          (Abs "x" (App (Var "f") (App (Var "x") (Var "x"))))
-          (Abs "x" (App (Var "f") (App (Var "x") (Var "x")))))
-
-ghci> infer [] ycomb 0
-Nothing    -- the type system rejects it
 ```
+-- The exponential A ⇒ B is the function type A → B.
+-- Evaluation morphism:
+ev : (A → B) × A → B
+ev := λp. (π₁ p)(π₂ p)
+
+-- Currying (the unique transpose):
+curry(h) := λc. λa. h⟨c, a⟩
+
+-- Universal property check:
+ev ∘ ⟨curry(h), π₂⟩ ≡_βη h      -- ev after curry recovers h
+k ≡ curry(h)                       -- curry is unique
+```
+
+Giving a morphism `h : C × A → B` is the same as giving `curry(h) : C → (A → B)`. The categorical universal property *is* the λ-abstraction rule in disguise.
 
 ---
 
